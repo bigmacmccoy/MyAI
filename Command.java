@@ -1,11 +1,12 @@
 
-public class Command extends Catalog{
+public class Command{
 	private String input = "";
 	private long startTime = 0;
 	private String actionName = "";
 	private String actionWin64 = "";
 	private String actionWin32 = "";
 	private String[] commandList = null;
+	public boolean hasArgument = false;
 	
 	public Command(String textInput, long time){
 		input = textInput;
@@ -59,7 +60,10 @@ public class Command extends Catalog{
 		}
 	}
 	public String toString(){
-		return "Input: " + input + ", Time: " + startTime + ".";
+		return "Input: \"" + input
+				+ "\", Time: \"" + startTime 
+				+ "\", Name: \"" + actionName
+				+ "\".";
 	}
 	public void Clear(){
 		input = null;
@@ -68,5 +72,8 @@ public class Command extends Catalog{
 		actionWin64 = null;
 		actionWin32 = null;
 		commandList = null;
+	}
+	public void setHasArgument(boolean hasArgument) {
+		this.hasArgument = hasArgument;
 	}
 }

@@ -2,46 +2,113 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class AICore {
 	public static String error = "";
 // Should have input reception, output, and processing
-	Catalog commands = new Catalog();
+	public static Catalog commands = null;
 	
 	public AICore(){
-		Print(error);
-		Print("MAI Online");
+		commands = new Catalog();
+		if(error.isEmpty()){
+			Print("MAI Online");
+		}else{
+			Print(error);
+			return;
+		}		
 		return;
 	}
-	public void Recieve(String userInput){
+	public Command Recieve(String userInput){
 		Command current = new Command(userInput, CurrentTime());
-		Print(current);
-		current = Process(current);
-		
-		return;
+		//Print("Recieved: " + current);
+		return current;
 	}
 	public Command Process(Command current){
 		String original = current.getInput();
+		//Print("Orig: " + original);
 		String[] filtered = Filter(original);
 		current.setCommandList(filtered);
-		Command matched = commands.Match(current);
+		ArrayList<ArrayList<?>> results = commands.Match(current);
+		ArrayList<String> names = new ArrayList<String>();
+		@SuppressWarnings("unchecked")
+		ArrayList<Command> coms = (ArrayList<Command>) results.get(0);
+		@SuppressWarnings("unchecked")
+		ArrayList<Argument> args = (ArrayList<Argument>) results.get(1);
+		for(Command c : coms){
+			
+		}
+		if(matched == null ){
+			error = "No Matches!";
+			return null;
+		}
+		//Print("Matched: " + matched.getName());
 		Command processed = commands.Merge(current, matched);
+		Print("Processed: " + processed);
 		return processed;
+	}
+	public boolean Run(Command current, String OS){
+		String com = current.getAction(OS);
+		System.out.println(com);
+		try{
+			//Print("Start Run...");
+			Runtime rt = Runtime.getRuntime();
+			if(com.matches(".*%.+%.*")){
+				String env = com.substring(com.indexOf('%')+1, com.lastIndexOf('%'));
+				String bad = com.substring(com.indexOf('%'), com.lastIndexOf('%')+1);
+				//Print("Env: \"" + env + "\"");
+				String value = System.getenv(env);
+				if(env.equalsIgnoreCase("AppData")){
+					value = value.replace("\\Roaming", "");
+				}
+				//Print("Rep: " + value);
+				com = com.replace(bad, value);
+				//com = com.replace("C:", "");
+				Print("Final: " + com);
+			}
+			@SuppressWarnings("unused")
+			Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
+		}catch (Exception e){
+			//e.printStackTrace();
+			//Print("Could Not Run Command.");
+			return false;
+		}
+		return true;
 	}
 	private String[] Filter(String unfiltered){
 		String[] split = unfiltered.split(" ");
-		String[] filtered = new String[split.length];
+		//for(String s : split){
+		//	Print("Split: " + s);
+		//}
+		ArrayList<String> filtered = new ArrayList<String>();
+		ArrayList<String> badAL = new ArrayList<String>();
+		String[] result = null;
 		
 		try{
-			BufferedReader br = new BufferedReader(new FileReader("badWords.txt"));
-			for(int i = 0; i < split.length; i++){
-				while(br.ready()){
-					if(split[i].equals(br.readLine())){
-						filtered[i] = split[i];
-					}
+			BufferedReader br = new BufferedReader(new FileReader("docs/badWords.txt"));
+			while(br.ready()){
+				badAL.add(br.readLine());
+			}
+			
+			for(String input : split){
+				if(badAL.contains(input)){
+					//Print("Bad: " + input);
+				}else{
+					//Print("Good: " + input);
+					filtered.add(input);
 				}
 			}
+			result = new String[filtered.size()];
+			
+			for(int i = 0; i < filtered.size(); i++){
+				result[i] = filtered.get(i);
+			}
+			
+			//for(String s : result){
+			//	Print("Result: " + s);
+			//}
+			
 			br.close();
 		}catch(FileNotFoundException e){
 			error = "File Not Found.";
@@ -49,7 +116,7 @@ public class AICore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return filtered;
+		return result;
 	}
 	public long CurrentTime(){
 		return System.nanoTime();
