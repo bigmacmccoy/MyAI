@@ -12,7 +12,6 @@ import org.w3c.dom.NodeList;
 
 public class Catalog{
 	private ArrayList<Command> CommandCatalog = new ArrayList<Command>();
-	private ArrayList<Argument> ArgumentCatalog = new ArrayList<Argument>();
 	public Catalog(){
 		System.out.println("Creating Catalog...");
 		try {
@@ -36,24 +35,6 @@ public class Catalog{
  						com.setAction(eElement.getAttribute("Win32"), "Windows 7 32bit");
  						com.setCommandList(SplitCommands(eElement.getAttribute("Command")));
  						//System.out.println("Name: " + com.getName());
- 						if(eElement.hasChildNodes()){
- 							com.setHasArgument(true);
- 	 						NodeList children = eElement.getChildNodes();
- 	 						for(int i = 0; i < children.getLength(); i++){
- 	 							Node child = children.item(i);
- 	 							if(child.getNodeType() == Node.ELEMENT_NODE){
- 	 								Element elem = (Element) nNode;
- 	 			 					if(elem.getAttribute("Name") != null){
- 	 			 						Argument arg = new Argument(com);
- 	 			 						arg.setName(elem.getAttribute("Name"));
- 	 			 						arg.setAction(elem.getAttribute("Action"));
- 	 			 						arg.setName(elem.getAttribute("Name"));
- 	 			 						arg.setArgList(SplitCommands(elem.getAttribute("Command")));
- 	 			 						ArgumentCatalog.add(arg);
- 	 			 					}
- 	 							}
- 	 						}
- 	 					}
  						CommandCatalog.add(com);
  					}else{
  						//System.out.println(eElement.getNodeName());
@@ -70,17 +51,11 @@ public class Catalog{
 			//e.printStackTrace();
 		}
 		System.out.println("Commands: " + CommandCatalog.size());
-		System.out.println("Arguments: " + ArgumentCatalog.size());
 	}
-	public ArrayList<ArrayList<?>> Match(Command two){
+	public ArrayList<Command> Match(Command two){
 		int numMatches = 0;
-		int totalMatches = 0;
-		int argMatches = 0;
 		String[] twoCom = two.getCommandList();
-		ArrayList<ArrayList<?>> totalArray = new ArrayList<ArrayList<?>>();
-		ArrayList<Integer> numArray = new ArrayList<Integer>();
 		ArrayList<Command> comArray = new ArrayList<Command>();
-		ArrayList<Argument> argArray = new ArrayList<Argument>();
 		
 		System.out.println("Size of Catalog: " + CommandCatalog.size());
 		for(Command one : CommandCatalog){	//ITerate Through catalog, one command at a time
@@ -97,37 +72,11 @@ public class Catalog{
 			}
 			if(numMatches > 0){		//If there was a match, store that command 
 				//System.out.println("NumMatches: " + numMatches);
-				comArray.add(one);	//and the number of matches in arrays.
-				numArray.add(numMatches);
-				totalMatches += numMatches; //Keep track of total matches as numMatches gets reset
-				numMatches = 0;
-				if(one.hasArgument){
-					for(Argument arg : ArgumentCatalog){	//ITerate Through catalog, one Argument at a time
-						String[] argCom = arg.getArgList();
-						if(arg.getAssociated() == one){
-							for(String twoStr : twoCom){
-								for(String argStr : argCom){
-									if(argStr.equalsIgnoreCase(twoStr)){	//Compare the command strings in each list
-										numMatches++;	//if there is a match, increment the match number
-									}
-								}
-							}
-						}
-						if(numMatches > 0){
-							if(argMatches < numMatches){	//If there is an argument with more
-								argMatches = numMatches;	//matches already added, skip this one
-								argArray.add(arg);
-								numMatches = 0;
-							}
-						}
-					}
-				}
+				comArray.add(one);	//and the match into an array.
 			}
 		}
-		if(totalMatches > 0){
-			totalArray.add(comArray);
-			totalArray.add(argArray);
-			return totalArray;				//Return EVERYTHING.
+		if(numMatches > 0){
+			return comArray;				//Return all of the matched commands
 		}else{
 			System.out.println("No Match.");
 			return null;
@@ -157,21 +106,5 @@ public class Catalog{
 	private String[] SplitCommands(String allCommands){
 		String[] list = allCommands.split(",");
 		return list;
-	}
-	public boolean hasArgs(Command com){
-		for(Argument arg : ArgumentCatalog){
-			if(com == arg.getAssociated()){
-				return true;
-			}
-		}
-		return false;
-	}
-	public Argument getArg(Command com, String argName){
-		for(Argument arg : ArgumentCatalog){
-			if((com == arg.getAssociated()) && (argName.equalsIgnoreCase(arg.getName()))){
-					return arg;
-			}
-		}
-		return null;
 	}
 }

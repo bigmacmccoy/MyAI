@@ -3,15 +3,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 public class AICore {
 	public static String error = "";
 // Should have input reception, output, and processing
 	public static Catalog commands = null;
+	public static MemoryBank previous = null;
 	
 	public AICore(){
 		commands = new Catalog();
+		previous = new MemoryBank();
 		if(error.isEmpty()){
 			Print("MAI Online");
 		}else{
@@ -30,23 +33,63 @@ public class AICore {
 		//Print("Orig: " + original);
 		String[] filtered = Filter(original);
 		current.setCommandList(filtered);
-		ArrayList<ArrayList<?>> results = commands.Match(current);
-		ArrayList<String> names = new ArrayList<String>();
-		@SuppressWarnings("unchecked")
-		ArrayList<Command> coms = (ArrayList<Command>) results.get(0);
-		@SuppressWarnings("unchecked")
-		ArrayList<Argument> args = (ArrayList<Argument>) results.get(1);
-		for(Command c : coms){
-			
-		}
-		if(matched == null ){
+		ArrayList<Command> matched = commands.Match(current);
+		if(matched.size() == 0){
 			error = "No Matches!";
 			return null;
+		}else if(matched.size() == 1){
+			//Print("Matched: " + matched.getName());
+			Command processed = commands.Merge(current, matched.get(0));
+			Print("Processed: " + processed);
+			return processed;
+		}else{
+			Command preference = CheckMemory(current, matched);
+			if(preference == null){
+				Command choice = AskUser(current, matched);
+				if(choice == null){
+					return null;
+				}
+				previous.Add(choice, current.getInput().split(" "));
+				Command processed = commands.Merge(current, choice);
+				Print("Processed: " + processed);
+				return processed;
+			}
 		}
-		//Print("Matched: " + matched.getName());
-		Command processed = commands.Merge(current, matched);
-		Print("Processed: " + processed);
-		return processed;
+		return null;
+	}
+	private Command AskUser(Command input, ArrayList<Command> possible){
+		Print("I could not match your query to an action. I have found " + possible.size() + " matched for your query.");
+		Scanner user = new Scanner(System.in);
+		Print("Here are the options I found. Please enter the corresponding number or \"none\" if none of them are correct.");
+		int i = 1;
+		for(Command com : possible){
+			Print("[ " + i + " ]\t" + com.getName());
+			i++;
+		}
+		String str = user.nextLine();
+		if(str.equalsIgnoreCase("none")){
+			user.close();
+			return null;
+		}
+		int choice = Integer.parseInt(str);
+		choice--;
+		if((choice > 0) && (choice < possible.size())){
+			user.close();
+			return possible.get(choice);
+		}else{
+			Print("Error: Please choose a number displayed on screen.");
+			user.close();
+			return AskUser(input, possible);
+		}
+	}
+	private Command CheckMemory(Command input, ArrayList<Command> possible){
+		for(Command com : possible){
+			Memory last = previous.Get(com);
+			if(last != null){
+				return last.getPreference();
+			}
+		}
+		return null;
 	}
 	public boolean Run(Command current, String OS){
 		String com = current.getAction(OS);
