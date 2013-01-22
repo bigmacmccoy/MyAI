@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<GrammarLibrary>
+	<GrammarObject Name = "iTunes" Command = "itunes,music,song" Win32 = "%ProgramFiles%\iTunes\iTunes.exe" Win64 = "%ProgramFiles(x86)%\iTunes\iTunes.exe"></GrammarObject>
+	<GrammarObject Name = "Rockmelt" Command = "rockmelt,internet,browser" Win32 = "%ProgramFiles%\Rockmelt\rockmelt.exe" Win64 = "%AppData%\Local\RockMelt\Application\rockmelt.exe"></GrammarObject>
+	<GrammarObject Name = "Windows Explorer" Command = "explorer,file" Win32 = "explorer.exe" Win64 = "explorer.exe"></GrammarObject>
+</GrammarLibrary>
