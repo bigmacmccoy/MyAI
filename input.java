@@ -1,17 +1,25 @@
-public class input {
-	private String textInput;
-	private String timeEntered;
+public class Input extends MAIObject{
+	private String input = "";
+	private long startTime = 0;
 	
-	public input(String userInput, String time){
-		textInput = userInput;
-		timeEntered = time;
+	public Input(String userInput, long time){
+		setInput(userInput);
+		setStartTime(time);
 	}
-	
-	public String getInput(){
-		return textInput;
+
+	public String getInput() {
+		return input;
 	}
-	
-	public String getTime(){
-		return timeEntered;
+
+	public void setInput(String input) {
+		this.input = input;
+	}
+
+	public long getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
 	}
 }

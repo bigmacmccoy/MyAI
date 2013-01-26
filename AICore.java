@@ -23,17 +23,18 @@ public class AICore {
 		}		
 		return;
 	}
-	public Command Recieve(String userInput){
-		Command current = new Command(userInput, CurrentTime());
+	public Input Recieve(String userInput){
+		Input current = new Input(userInput, CurrentTime());
 		//Print("Recieved: " + current);
 		return current;
 	}
-	public Command Process(Command current){
-		String original = current.getInput();
+	public Command Process(Input in){
+		Command current = new Command();
+		String original = in.getInput();
 		//Print("Orig: " + original);
-		String[] filtered = Filter(original);
-		current.setCommandList(filtered);
-		ArrayList<Command> matched = commands.Match(current);
+		ArrayList<String> filtered = Filter(original);
+		current.setTriggers(filtered);
+		ArrayList<Command> matched = commands.Match(in);
 		if(matched.size() == 0){
 			error = "No Matches!";
 			return null;
@@ -63,24 +64,24 @@ public class AICore {
 		Print("Here are the options I found. Please enter the corresponding number or \"none\" if none of them are correct.");
 		int i = 1;
 		for(Command com : possible){
-			Print("[ " + i + " ]\t" + com.getName());
-			i++;
-		}
-		String str = user.nextLine();
-		if(str.equalsIgnoreCase("none")){
-			user.close();
-			return null;
-		}
-		int choice = Integer.parseInt(str);
-		choice--;
-		if((choice > 0) && (choice < possible.size())){
-			user.close();
-			return possible.get(choice);
-		}else{
-			Print("Error: Please choose a number displayed on screen.");
-			user.close();
-			return AskUser(input, possible);
-		}
+				Print("[ " + i + " ]\t" + com.getName());
+				i++;
+			}
+			String str = user.nextLine();
+			if(str.equalsIgnoreCase("none")){
+				user.close();
+				return null;
+			}
+			int choice = Integer.parseInt(str);
+			choice--;
+			if((choice >= 0) && (choice < possible.size())){
+				user.close();
+				return possible.get(choice);
+			}else{
+				Print("Error: Please choose a number displayed on screen.");
+				user.close();
+				return null;
+			}
 	}
 	private Command CheckMemory(Command input, ArrayList<Command> possible){
 		for(Command com : possible){
@@ -112,6 +113,7 @@ public class AICore {
 			}
 			@SuppressWarnings("unused")
 			Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
+			rt.gc();
 		}catch (Exception e){
 			//e.printStackTrace();
 			//Print("Could Not Run Command.");
@@ -119,14 +121,13 @@ public class AICore {
 		}
 		return true;
 	}
-	private String[] Filter(String unfiltered){
+	private ArrayList<String> Filter(String unfiltered){
 		String[] split = unfiltered.split(" ");
 		//for(String s : split){
 		//	Print("Split: " + s);
 		//}
 		ArrayList<String> filtered = new ArrayList<String>();
 		ArrayList<String> badAL = new ArrayList<String>();
-		String[] result = null;
 		
 		try{
 			BufferedReader br = new BufferedReader(new FileReader("docs/badWords.txt"));
@@ -142,16 +143,6 @@ public class AICore {
 					filtered.add(input);
 				}
 			}
-			result = new String[filtered.size()];
-			
-			for(int i = 0; i < filtered.size(); i++){
-				result[i] = filtered.get(i);
-			}
-			
-			//for(String s : result){
-			//	Print("Result: " + s);
-			//}
-			
 			br.close();
 		}catch(FileNotFoundException e){
 			error = "File Not Found.";
@@ -159,7 +150,7 @@ public class AICore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return filtered;
 	}
 	public long CurrentTime(){
 		return System.nanoTime();

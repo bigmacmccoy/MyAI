@@ -11,7 +11,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Catalog{
+	private ArrayList<MAIObject> Catalog = new ArrayList<MAIObject>();
 	private ArrayList<Command> CommandCatalog = new ArrayList<Command>();
+	private ArrayList<Argument> ArgumentCatalog = new ArrayList<Argument>();
 	public Catalog(){
 		System.out.println("Creating Catalog...");
 		try {
@@ -20,28 +22,43 @@ public class Catalog{
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
-
-			NodeList nList = doc.getElementsByTagName("GrammarObject");
-
-			for (int temp = 0; temp < nList.getLength(); temp++) {
- 				Node nNode = nList.item(temp);
-		   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
- 					Element eElement = (Element) nNode;
- 					if(eElement.getAttribute("Name") != null){
- 						//System.out.println(eElement.getAttribute("Name"));
- 						Command com = new Command();
- 						com.setName(eElement.getAttribute("Name"));
- 						com.setAction(eElement.getAttribute("Win64"), "Windows 7 64bit");
- 						com.setAction(eElement.getAttribute("Win32"), "Windows 7 32bit");
- 						com.setCommandList(SplitCommands(eElement.getAttribute("Command")));
- 						//System.out.println("Name: " + com.getName());
- 						CommandCatalog.add(com);
- 					}else{
- 						//System.out.println(eElement.getNodeName());
- 					}
- 				}else{
- 					//System.out.println("Not a node.");
- 				}
+			
+			NodeList nList = doc.getElementsByTagName("GrammarLibrary");
+			for(int i = 0; i < nList.getLength(); i++){
+				Node gl = nList.item(i);
+				NodeList lib = gl.getChildNodes();
+				for(int a = 0; a < lib.getLength(); a++){
+					Node current = lib.item(a);
+					NodeList children = current.getChildNodes();
+					for(int x = 0; x < children.getLength(); x++){
+						MAIObject obj = new MAIObject();
+						String nName = children.item(x).getNodeName();
+						String nCon = children.item(x).getTextContent();
+						
+						switch (nName){
+						case "Name":
+							obj.setName(nCon);
+							break;
+						case "Triggers":
+							ArrayList<String> trig = new ArrayList<String>();
+							for(String str : nCon.split(",")){
+								trig.add(str);
+							}
+							obj.setTriggers(trig);
+							break;
+						case "Win32":
+							obj.setAction("Windows 7 32bit", nCon);
+						case "Win64":
+							obj.setAction("Windows 7 64bit", nCon);
+						}
+						
+						if(current.getNodeName().equalsIgnoreCase("Command")){
+							CommandCatalog.add(new Command(obj));
+						}else if(current.getNodeName().equalsIgnoreCase("Argument")){
+							ArgumentCatalog.add(new Argument(obj));
+						}
+					}
+				}
 			}
 		}catch(FileNotFoundException e){
 			AICore.error = "File Not Found - " + e.getMessage();
@@ -51,23 +68,30 @@ public class Catalog{
 			//e.printStackTrace();
 		}
 		System.out.println("Commands: " + CommandCatalog.size());
+		System.out.println("Arguments: " + ArgumentCatalog.size());
+		Catalog.addAll(CommandCatalog);
+		Catalog.addAll(ArgumentCatalog);
 	}
-	public ArrayList<Command> Match(Command two){
+	public ArrayList<Command> Match(Input in){
 		int numMatches = 0;
-		String[] twoCom = two.getCommandList();
+		ArrayList<String> inTrig = in.getTriggers();
 		ArrayList<Command> comArray = new ArrayList<Command>();
 		
 		System.out.println("Size of Catalog: " + CommandCatalog.size());
-		for(Command one : CommandCatalog){	//ITerate Through catalog, one command at a time
+		for(MAIObject one : Catalog){	//ITerate Through catalog, one command at a time
 			//System.out.println(one.getName());
-			String[] oneCom = one.getCommandList();
-			for(String twoStr : twoCom){
-				//System.out.println("Two: " + twoStr);
-				for(String oneStr : oneCom){
-					//System.out.println("One: " + oneStr);
-					if(oneStr.equalsIgnoreCase(twoStr)){	//Compare the command strings in each list
-						numMatches++;	//if there is a match, increment the match number
-					}
+			ArrayList<String> oneTrig = one.getTriggers();
+			for(String inStr : inTrig){
+				if(inStr.equalsIgnoreCase(one.getName())){
+					numMatches++;
+				}else{
+					//System.out.println("Two: " + twoStr);
+					for(String oneStr : oneTrig){
+						//System.out.println("One: " + oneStr);
+						if(oneStr.equalsIgnoreCase(inStr)){	//Compare the command strings in each list
+							numMatches++;	//if there is a match, increment the match number
+						}
+					}					
 				}
 			}
 			if(numMatches > 0){		//If there was a match, store that command 
