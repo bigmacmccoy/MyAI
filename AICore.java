@@ -33,53 +33,14 @@ public class AICore {
 		//Print("Orig: " + original);
 		String[] filtered = Filter(original);
 		current.setCommandList(filtered);
-		ArrayList<Command> matched = commands.Match(current);
-		if(matched.size() == 0){
+		Command processed = commands.Match(current);
+		if(processed == null){
 			error = "No Matches!";
 			return null;
-		}else if(matched.size() == 1){
+		}else{
 			//Print("Matched: " + matched.getName());
-			Command processed = commands.Merge(current, matched.get(0));
 			Print("Processed: " + processed);
 			return processed;
-		}else{
-			Command preference = CheckMemory(current, matched);
-			if(preference == null){
-				Command choice = AskUser(current, matched);
-				if(choice == null){
-					return null;
-				}
-				previous.Add(choice, current.getInput().split(" "));
-				Command processed = commands.Merge(current, choice);
-				Print("Processed: " + processed);
-				return processed;
-			}
-		}
-		return null;
-	}
-	private Command AskUser(Command input, ArrayList<Command> possible){
-		Print("I could not match your query to an action. I have found " + possible.size() + " matched for your query.");
-		Scanner user = new Scanner(System.in);
-		Print("Here are the options I found. Please enter the corresponding number or \"none\" if none of them are correct.");
-		int i = 1;
-		for(Command com : possible){
-			Print("[ " + i + " ]\t" + com.getName());
-			i++;
-		}
-		String str = user.nextLine();
-		if(str.equalsIgnoreCase("none")){
-			user.close();
-			return null;
-		}
-		int choice = Integer.parseInt(str);
-		choice--;
-		if((choice > 0) && (choice < possible.size())){
-			user.close();
-			return possible.get(choice);
-		}else{
-			Print("Error: Please choose a number displayed on screen.");
-			user.close();
-			return AskUser(input, possible);
 		}
 	}
 	private Command CheckMemory(Command input, ArrayList<Command> possible){
@@ -92,11 +53,14 @@ public class AICore {
 		return null;
 	}
 	public boolean Run(Command current, String OS){
-		String com = current.getAction(OS);
-		System.out.println(com);
-		try{
-			//Print("Start Run...");
-			Runtime rt = Runtime.getRuntime();
+		//System.out.println(com);
+		String result = "cmd.exe /C ";
+		ArrayList<String> array = new ArrayList<String>();
+		array.add(current.getAction(OS));
+		if(current.hasArgument){
+			array.add(current.getArgLink().getAction(OS));
+		}
+		for(String com : array){
 			if(com.matches(".*%.+%.*")){
 				String env = com.substring(com.indexOf('%')+1, com.lastIndexOf('%'));
 				String bad = com.substring(com.indexOf('%'), com.lastIndexOf('%')+1);
@@ -107,11 +71,17 @@ public class AICore {
 				}
 				//Print("Rep: " + value);
 				com = com.replace(bad, value);
-				//com = com.replace("C:", "");
-				Print("Final: " + com);
+				result.concat("\"" + com + "\"");
+				//Print("Final: " + com);
+			}else if(com.matches("http://.*")){
+				result.concat(" <" + com + ">");
 			}
+		}
+		try{
+			Print("Final: " + result);
+			Runtime rt = Runtime.getRuntime();
 			@SuppressWarnings("unused")
-			Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
+			Process proc = rt.exec(result);
 		}catch (Exception e){
 			//e.printStackTrace();
 			//Print("Could Not Run Command.");

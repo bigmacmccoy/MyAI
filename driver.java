@@ -34,6 +34,7 @@ public class driver {
 				current = MAI.Process(current);
 				if(current == null){
 					System.out.println("No Match Found.");
+					return;
 				}
 				boolean success = MAI.Run(current, OS);
 				if(success){

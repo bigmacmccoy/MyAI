@@ -7,6 +7,7 @@ public class Command{
 	private String actionWin32 = "";
 	private String[] commandList = null;
 	public boolean hasArgument = false;
+	private Argument ArgLink = null;
 	
 	public Command(String textInput, long time){
 		input = textInput;
@@ -18,6 +19,10 @@ public class Command{
 	}
 	public String getInput(){
 		return input;
+	}
+	public void setInput(String input){
+		this.input = input;
+		return;
 	}
 	public String getName(){
 		return actionName;
@@ -36,6 +41,10 @@ public class Command{
 	}
 	public long getStartTime(){
 		return startTime;
+	}
+	public void setStartTime(long time){
+		this.startTime = time;
+		return;
 	}
 	public String getAction(String os){
 		switch(os){
@@ -75,5 +84,11 @@ public class Command{
 	}
 	public void setHasArgument(boolean hasArgument) {
 		this.hasArgument = hasArgument;
+	}
+	public Argument getArgLink() {
+		return ArgLink;
+	}
+	public void setArgLink(Argument argLink) {
+		ArgLink = argLink;
 	}
 }
