@@ -1,17 +1,37 @@
-public class input {
-	private String textInput;
-	private String timeEntered;
+import java.util.ArrayList;
+
+
+public class Input {
+	private String original;
+	private ArrayList<String> keywords = new ArrayList<String>();
+	private boolean multipleActions = false;
 	
-	public input(String userInput, String time){
-		textInput = userInput;
-		timeEntered = time;
+	public Input(String in) {
+		this.setOriginal(in);
 	}
-	
-	public String getInput(){
-		return textInput;
+
+	public ArrayList<String> getKeywords() {
+		return keywords;
 	}
-	
-	public String getTime(){
-		return timeEntered;
+
+	public void setKeywords(ArrayList<String> keywords) {
+		this.keywords = keywords;
 	}
+
+	public String getOriginal() {
+		return original;
+	}
+
+	public void setOriginal(String original) {
+		this.original = original;
+	}
+
+	public boolean hasMultipleActions() {
+		return multipleActions;
+	}
+
+	public void hasMultipleActions(boolean multipleActions) {
+		this.multipleActions = multipleActions;
+	}
+
 }
