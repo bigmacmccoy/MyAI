@@ -5,17 +5,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 public class AICore {
 	private Catalog cat = new Catalog();
 	private Engine eng = new Engine(System.getenv("os.name"));
 	private ExeSearch search = new ExeSearch();
+	private MemoryBank bank = new MemoryBank();
 	
 	public AICore(){
 		searchSystem(this.search);
 	}
-	public void Recieve(String input){
+	public boolean Recieve(String input){
 		Input in = new Input(input);
 		String[] inputSplit = input.split(" ");
 		String[] result = null;
@@ -36,6 +38,11 @@ public class AICore {
 					current.setIn(in);
 					todo.add(current);
 				}
+			}else if(result[0].equalsIgnoreCase("CurrentState")){
+				System.out.println("Hello. I am MAI, the personalized Artificial Intelligence. I am currently online and waiting for your command.");
+				return true;
+			}else if(result[0].equalsIgnoreCase("skip")){
+				continue;
 			}else{
 				actions++;
 				matches.add(str);
@@ -56,23 +63,42 @@ public class AICore {
 		if(actions > 1){
 			in.hasMultipleActions(true);
 		}else if(actions == 0){
-			System.out.println("Error!");
-			return;
+			System.out.println("I couldn't figure out what you wanted me to do. If can rephrase it, please do, if not please type \"Skip\".");
+			Scanner keyboard = new Scanner(System.in);
+			String rephrase = keyboard.nextLine();
+			Recieve(input, rephrase);
+			return true;
 		}
 		for(Action act : todo){
 			cat.add(act);
+			Memory mem = new Memory(act, null, act.getIn());
+			bank.Add(mem);
 		}
 		cat.add(in);
 		boolean success = eng.run(todo);
 		if(success){
 			System.out.println("Complete.");
+			return true;
 		}else{
 			System.out.println("Error!");
+			return false;
 		}
-		return;
+	}
+	private void Recieve(String input, String rephrase){
+		Recieve(rephrase);
+		//Need to make recursive while updating memory... hmm...
 	}
 	
 	public String[] Check(String word, Input in){
+		if(word.equalsIgnoreCase("Mai")){
+			if(in.getOriginal().split(" ").length == 1){
+				String[] res = {"CurrentState"};
+				return res;
+			}else{
+				String[] res = {"Skip"};
+				return res;
+			}
+		}
 		try {
 			URL url = LoadActions.class.getClassLoader().getResource("MAIActions.txt");
 			BufferedReader br = new BufferedReader(new FileReader(url.getPath()));
@@ -91,7 +117,18 @@ public class AICore {
 				if(trig.contains(word)){
 					return names;
 				}else if(special){
-					
+					for(String trigger : trig){
+						if(trigger.contains("[*]")){
+							String norm = trigger.replace("[*]", "");
+							if(word.matches(norm + ".*")){
+								names[1] = names[1].replace("[*]", word);
+								return names;
+							}else if(word.matches(".*" + norm)){
+								names[1] = names[1].replace("[*]", word);
+								return names;
+							}
+						}
+					}
 				}
 			}
 		} catch (FileNotFoundException e) {

@@ -10,6 +10,7 @@ public class Engine {
 		this.setOS(OS);
 	}
 	public boolean run(String command){
+		System.out.println("Command: " + command);
 		String output = "";
 		try {
 			Process pr = Runtime.getRuntime().exec(command);
