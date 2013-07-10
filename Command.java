@@ -2,24 +2,33 @@
 public class Command extends MAIObject{
 	public boolean hasArgument = false;
 	private Argument ArgLink = null;
+	private Input input;
+	private String actionName;
+	private String[] commandList;
+	private long startTime;
+	private String actionWin64;
+	private String actionWin32;
 	
-	public Command(){
-<<<<<<< HEAD
-		
+	public Command (){
+	
 	}
+	public Command(Input in, long startTime){
+		this.setInput(in);
+		this.setStartTime(startTime);
+	}
+	
 	public Command(MAIObject obj){
 		this.setName(obj.getName());
 		this.setAction(obj.getAction("Windows 7 32bit"), "Windows 7 32bit");
 		this.setAction(obj.getAction("Windows 7 64bit"), "Windows 7 64bit");
 		this.setTriggers(obj.getTriggers());
-=======
 		input = null;
 		startTime = 0;
 	}
-	public String getInput(){
+	public Input getInput(){
 		return input;
 	}
-	public void setInput(String input){
+	public void setInput(Input input){
 		this.input = input;
 		return;
 	}
@@ -66,7 +75,6 @@ public class Command extends MAIObject{
 			default:
 				break;
 		}
->>>>>>> master
 	}
 	public String toString(){
 		return "Type: Command" + 

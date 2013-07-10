@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 <GrammarLibrary>
-<<<<<<< HEAD
 <GrammarObject><Name>iTunes</Name><Command>itunes,music,song</Command><Win32>%ProgramFiles%\iTunes\iTunes.exe</Win32><Win64>%ProgramFiles(x86)%\iTunes\iTunes.exe</Win64></GrammarObject>
 <GrammarObject><Name>Windows Explorer</Name><Command>explorer,file</Command><Win32>explorer.exe</Win32><Win64>explorer.exe</Win64></GrammarObject>
 <GrammarObject><Name>Firefox</Name><Command>firefox,internet,browser</Command><Win32>%ProgramFiles%\Mozilla Firefox\firefox.exe</Win32><Win64>%ProgramFiles(x86)%\Mozilla Firefox\firefox.exe</Win64></GrammarObject>
-=======
 	<GrammarObject Name = "iTunes" Command = "itunes,music,song" Win32 = "%ProgramFiles%\iTunes\iTunes.exe" Win64 = "%ProgramFiles(x86)%\iTunes\iTunes.exe"></GrammarObject>
 	<GrammarObject Name = "Rockmelt" Command = "rockmelt,internet,browser" Win32 = "%ProgramFiles%\Rockmelt\rockmelt.exe" Win64 = "%AppData%\Local\RockMelt\Application\rockmelt.exe">
 		<Argument Name = "Facebook" Link = "Rockmelt" Command = "facebook" Win32 = "http://www.facebook.com" Win63 = "http://www.facebook.com"></Argument>
 	</GrammarObject>
 	<GrammarObject Name = "Windows Explorer" Command = "explorer,file" Win32 = "explorer.exe" Win64 = "explorer.exe"></GrammarObject>
->>>>>>> master
 </GrammarLibrary>

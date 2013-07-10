@@ -1,13 +1,10 @@
 
 public class Argument extends Command{
 	private Command associated;
-<<<<<<< HEAD
-=======
 	private String actionName = "";
 	private String actionWin64 = "";
 	private String actionWin32 = "";
 	private String[] commandList;
->>>>>>> master
 	
 	public Argument(){
 	}
@@ -24,8 +21,6 @@ public class Argument extends Command{
 	public void setAssociated(Command associated) {
 		this.associated = associated;
 	}
-<<<<<<< HEAD
-=======
 	public String getName() {
 		return actionName;
 	}
@@ -60,5 +55,4 @@ public class Argument extends Command{
 	public void setCommandList(String[] commandList) {
 		this.commandList = commandList;
 	}
->>>>>>> master
 }

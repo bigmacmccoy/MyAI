@@ -97,7 +97,6 @@ public class Catalog{
 		}
 		System.out.println("Commands: " + CommandCatalog.size());
 		System.out.println("Arguments: " + ArgumentCatalog.size());
-<<<<<<< HEAD
 		Catalog.addAll(CommandCatalog);
 		Catalog.addAll(ArgumentCatalog);
 	}
@@ -108,7 +107,9 @@ public class Catalog{
 		
 		System.out.println("Size of Catalog: " + CommandCatalog.size());
 		for(MAIObject one : Catalog){	//ITerate Through catalog, one command at a time
-=======
+			
+		}
+		return comArray;
 	}
 	public Command Match(Command two){
 		Command com = MatchCommand(two);
@@ -170,10 +171,9 @@ public class Catalog{
 		ArrayList<Integer> matchArray = new ArrayList<Integer>();
 		//System.out.println("Size of Catalog: " + CommandCatalog.size());
 		for(Command one : CommandCatalog){	//ITerate Through catalog, one command at a time
->>>>>>> master
 			//System.out.println(one.getName());
 			ArrayList<String> oneTrig = one.getTriggers();
-			for(String inStr : inTrig){
+			for(String inStr : oneTrig){
 				if(inStr.equalsIgnoreCase(one.getName())){
 					numMatches++;
 				}else{

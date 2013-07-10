@@ -34,23 +34,20 @@ public class driver {
 			if(success){
 				System.out.println("Operation Complete.");
 			}else{
-<<<<<<< HEAD
 				System.out.println("Operation Failed.");
-=======
-				current = MAI.Recieve(input);
+				in = MAI.Recieve(input);
 				
-				current = MAI.Process(current);
+				current = MAI.Process(in);
 				if(current == null){
 					System.out.println("No Match Found.");
 					return;
 				}
-				boolean success = MAI.Run(current, OS);
-				if(success){
+				boolean success1 = MAI.Run(current, OS);
+				if(success1){
 					System.out.println("Operation Complete.");
 				}else{
 					System.out.println("Operation Failed.");
 				}
->>>>>>> master
 			}
 			input = keyboard.nextLine();
 		}

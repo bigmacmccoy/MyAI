@@ -32,24 +32,16 @@ public class AICore {
 		Command current = new Command();
 		String original = in.getInput();
 		//Print("Orig: " + original);
-<<<<<<< HEAD
 		ArrayList<String> filtered = Filter(original);
 		current.setTriggers(filtered);
 		ArrayList<Command> matched = commands.Match(in);
 		if(matched.size() == 0){
-=======
-		String[] filtered = Filter(original);
-		current.setCommandList(filtered);
+		//String[] filtered1 = Filter(original);
+		//current.setCommandList(filtered1);
 		Command processed = commands.Match(current);
 		if(processed == null){
->>>>>>> master
 			error = "No Matches!";
 			return null;
-		}else{
-			//Print("Matched: " + matched.getName());
-			Print("Processed: " + processed);
-			return processed;
-<<<<<<< HEAD
 		}else{
 			Command preference = CheckMemory(current, matched);
 			if(preference == null){
@@ -57,11 +49,12 @@ public class AICore {
 				if(choice == null){
 					return null;
 				}
-				previous.Add(choice, current.getInput().split(" "));
-				Command processed = commands.Merge(current, choice);
+				previous.Add(choice, current.getInput().toString().split(" "));
+				processed = commands.Merge(current, choice);
 				Print("Processed: " + processed);
 				return processed;
 			}
+		}
 		}
 		return null;
 	}
@@ -89,10 +82,7 @@ public class AICore {
 				user.close();
 				return null;
 			}
-=======
 		}
->>>>>>> master
-	}
 	private Command CheckMemory(Command input, ArrayList<Command> possible){
 		for(Command com : possible){
 			Memory last = previous.Get(com);
@@ -130,13 +120,10 @@ public class AICore {
 		try{
 			Print("Final: " + result);
 			Runtime rt = Runtime.getRuntime();
-			@SuppressWarnings("unused")
-<<<<<<< HEAD
-			Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
-			rt.gc();
-=======
-			Process proc = rt.exec(result);
->>>>>>> master
+			//@SuppressWarnings("unused")
+			//Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
+			//rt.gc();
+			//Process proc = rt.exec(result);
 		}catch (Exception e){
 			//e.printStackTrace();
 			//Print("Could Not Run Command.");
