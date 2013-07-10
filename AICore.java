@@ -32,17 +32,24 @@ public class AICore {
 		Command current = new Command();
 		String original = in.getInput();
 		//Print("Orig: " + original);
+<<<<<<< HEAD
 		ArrayList<String> filtered = Filter(original);
 		current.setTriggers(filtered);
 		ArrayList<Command> matched = commands.Match(in);
 		if(matched.size() == 0){
+=======
+		String[] filtered = Filter(original);
+		current.setCommandList(filtered);
+		Command processed = commands.Match(current);
+		if(processed == null){
+>>>>>>> master
 			error = "No Matches!";
 			return null;
-		}else if(matched.size() == 1){
+		}else{
 			//Print("Matched: " + matched.getName());
-			Command processed = commands.Merge(current, matched.get(0));
 			Print("Processed: " + processed);
 			return processed;
+<<<<<<< HEAD
 		}else{
 			Command preference = CheckMemory(current, matched);
 			if(preference == null){
@@ -82,6 +89,9 @@ public class AICore {
 				user.close();
 				return null;
 			}
+=======
+		}
+>>>>>>> master
 	}
 	private Command CheckMemory(Command input, ArrayList<Command> possible){
 		for(Command com : possible){
@@ -93,11 +103,14 @@ public class AICore {
 		return null;
 	}
 	public boolean Run(Command current, String OS){
-		String com = current.getAction(OS);
-		System.out.println(com);
-		try{
-			//Print("Start Run...");
-			Runtime rt = Runtime.getRuntime();
+		//System.out.println(com);
+		String result = "cmd.exe /C ";
+		ArrayList<String> array = new ArrayList<String>();
+		array.add(current.getAction(OS));
+		if(current.hasArgument){
+			array.add(current.getArgLink().getAction(OS));
+		}
+		for(String com : array){
 			if(com.matches(".*%.+%.*")){
 				String env = com.substring(com.indexOf('%')+1, com.lastIndexOf('%'));
 				String bad = com.substring(com.indexOf('%'), com.lastIndexOf('%')+1);
@@ -108,12 +121,22 @@ public class AICore {
 				}
 				//Print("Rep: " + value);
 				com = com.replace(bad, value);
-				//com = com.replace("C:", "");
-				Print("Final: " + com);
+				result.concat("\"" + com + "\"");
+				//Print("Final: " + com);
+			}else if(com.matches("http://.*")){
+				result.concat(" <" + com + ">");
 			}
+		}
+		try{
+			Print("Final: " + result);
+			Runtime rt = Runtime.getRuntime();
 			@SuppressWarnings("unused")
+<<<<<<< HEAD
 			Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
 			rt.gc();
+=======
+			Process proc = rt.exec(result);
+>>>>>>> master
 		}catch (Exception e){
 			//e.printStackTrace();
 			//Print("Could Not Run Command.");
