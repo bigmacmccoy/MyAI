@@ -1,34 +1,26 @@
 
-public class Command extends MAIObject{
+public class Command{
+	private String input = "";
+	private long startTime = 0;
+	private String actionName = "";
+	private String actionWin64 = "";
+	private String actionWin32 = "";
+	private String[] commandList = null;
 	public boolean hasArgument = false;
 	private Argument ArgLink = null;
-	private Input input;
-	private String actionName;
-	private String[] commandList;
-	private long startTime;
-	private String actionWin64;
-	private String actionWin32;
 	
-	public Command (){
-	
+	public Command(String textInput, long time){
+		input = textInput;
+		startTime = time;
 	}
-	public Command(Input in, long startTime){
-		this.setInput(in);
-		this.setStartTime(startTime);
-	}
-	
-	public Command(MAIObject obj){
-		this.setName(obj.getName());
-		this.setAction(obj.getAction("Windows 7 32bit"), "Windows 7 32bit");
-		this.setAction(obj.getAction("Windows 7 64bit"), "Windows 7 64bit");
-		this.setTriggers(obj.getTriggers());
+	public Command(){
 		input = null;
 		startTime = 0;
 	}
-	public Input getInput(){
+	public String getInput(){
 		return input;
 	}
-	public void setInput(Input input){
+	public void setInput(String input){
 		this.input = input;
 		return;
 	}
@@ -77,9 +69,18 @@ public class Command extends MAIObject{
 		}
 	}
 	public String toString(){
-		return "Type: Command" + 
-				"Name: \"" + this.getName()
+		return "Input: \"" + input
+				+ "\", Time: \"" + startTime 
+				+ "\", Name: \"" + actionName
 				+ "\".";
+	}
+	public void Clear(){
+		input = null;
+		startTime = 0;
+		actionName = null;
+		actionWin64 = null;
+		actionWin32 = null;
+		commandList = null;
 	}
 	public void setHasArgument(boolean hasArgument) {
 		this.hasArgument = hasArgument;

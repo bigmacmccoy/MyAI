@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class driver {
-
+	
 	private static Command current = new Command();
 	
 	public static void main(String[] args) {
@@ -23,35 +23,31 @@ public class driver {
 		String input = "";
 		Scanner keyboard = new Scanner(System.in);
 		System.out.println("Waiting for input: ");
-		input = keyboard.nextLine();
+		
 		while(!(input.equalsIgnoreCase("exit"))){
-			Input in = MAI.Recieve(input);
-			current = MAI.Process(in);
-			if(current == null){
-				System.out.println("No Match Found.");
-			}
-			boolean success = MAI.Run(current, OS);
-			if(success){
-				System.out.println("Operation Complete.");
+			input = keyboard.nextLine();
+			if(input.equalsIgnoreCase("exit")){
+				break;
 			}else{
-				System.out.println("Operation Failed.");
-				in = MAI.Recieve(input);
-				
-				current = MAI.Process(in);
+				current = MAI.Recieve(input); //Good
+				//System.out.println("Before: " + current);
+				current = MAI.Process(current);
+				//System.out.println("After: " + current);
 				if(current == null){
 					System.out.println("No Match Found.");
 					return;
 				}
-				boolean success1 = MAI.Run(current, OS);
-				if(success1){
+				boolean success = MAI.Run(current, OS);
+				if(success){
 					System.out.println("Operation Complete.");
 				}else{
 					System.out.println("Operation Failed.");
 				}
 			}
-			input = keyboard.nextLine();
 		}
 		keyboard.close();
 		System.out.println("Exiting...");
+
 	}
+
 }

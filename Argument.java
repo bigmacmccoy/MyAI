@@ -1,20 +1,15 @@
 
-public class Argument extends Command{
+public class Argument {
 	private Command associated;
 	private String actionName = "";
 	private String actionWin64 = "";
 	private String actionWin32 = "";
 	private String[] commandList;
 	
-	public Argument(){
+	public Argument(Command com){
+		setAssociated(com);
+		return;
 	}
-	public Argument(MAIObject obj){
-		this.setName(obj.getName());
-		this.setAction(obj.getAction("Windows 7 32bit"), "Windows 7 32bit");
-		this.setAction(obj.getAction("Windows 7 64bit"), "Windows 7 64bit");
-		this.setTriggers(obj.getTriggers());
-	}
-	
 	public Command getAssociated() {
 		return associated;
 	}

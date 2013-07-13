@@ -11,7 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Catalog{
-	private ArrayList<MAIObject> Catalog = new ArrayList<MAIObject>();
 	private ArrayList<Command> CommandCatalog = new ArrayList<Command>();
 	private ArrayList<Argument> ArgumentCatalog = new ArrayList<Argument>();
 	public Catalog(){
@@ -22,43 +21,28 @@ public class Catalog{
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
-			
-			NodeList nList = doc.getElementsByTagName("GrammarLibrary");
-			for(int i = 0; i < nList.getLength(); i++){
-				Node gl = nList.item(i);
-				NodeList lib = gl.getChildNodes();
-				for(int a = 0; a < lib.getLength(); a++){
-					Node current = lib.item(a);
-					NodeList children = current.getChildNodes();
-					for(int x = 0; x < children.getLength(); x++){
-						MAIObject obj = new MAIObject();
-						String nName = children.item(x).getNodeName();
-						String nCon = children.item(x).getTextContent();
-						
-						switch (nName){
-						case "Name":
-							obj.setName(nCon);
-							break;
-						case "Triggers":
-							ArrayList<String> trig = new ArrayList<String>();
-							for(String str : nCon.split(",")){
-								trig.add(str);
-							}
-							obj.setTriggers(trig);
-							break;
-						case "Win32":
-							obj.setAction("Windows 7 32bit", nCon);
-						case "Win64":
-							obj.setAction("Windows 7 64bit", nCon);
-						}
-						
-						if(current.getNodeName().equalsIgnoreCase("Command")){
-							CommandCatalog.add(new Command(obj));
-						}else if(current.getNodeName().equalsIgnoreCase("Argument")){
-							ArgumentCatalog.add(new Argument(obj));
-						}
-					}
-				}
+
+			NodeList nList = doc.getElementsByTagName("GrammarObject");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+ 				Node nNode = nList.item(temp);
+		   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+ 					Element eElement = (Element) nNode;
+ 					if(eElement.getAttribute("Name") != null){
+ 						//System.out.println(eElement.getAttribute("Name"));
+ 						Command com = new Command();
+ 						com.setName(eElement.getAttribute("Name"));
+ 						com.setAction(eElement.getAttribute("Win64"), "Windows 7 64bit");
+ 						com.setAction(eElement.getAttribute("Win32"), "Windows 7 32bit");
+ 						com.setCommandList(SplitCommands(eElement.getAttribute("Command")));
+ 						//System.out.println("Name: " + com.getName());
+ 						CommandCatalog.add(com);
+ 					}else{
+ 						//System.out.println(eElement.getNodeName());
+ 					}
+ 				}else{
+ 					//System.out.println("Not a node.");
+ 				}
 			}
 			
 			nList = doc.getElementsByTagName("Argument");
@@ -97,22 +81,10 @@ public class Catalog{
 		}
 		System.out.println("Commands: " + CommandCatalog.size());
 		System.out.println("Arguments: " + ArgumentCatalog.size());
-		Catalog.addAll(CommandCatalog);
-		Catalog.addAll(ArgumentCatalog);
-	}
-	public ArrayList<Command> Match(Input in){
-		int numMatches = 0;
-		ArrayList<String> inTrig = in.getTriggers();
-		ArrayList<Command> comArray = new ArrayList<Command>();
-		
-		System.out.println("Size of Catalog: " + CommandCatalog.size());
-		for(MAIObject one : Catalog){	//ITerate Through catalog, one command at a time
-			
-		}
-		return comArray;
 	}
 	public Command Match(Command two){
 		Command com = MatchCommand(two);
+		//System.out.println("Matched In Function: " + two + " + " + com);
 		Argument arg = MatchArgument(two);
 		if(com == null){
 			return null;
@@ -172,18 +144,14 @@ public class Catalog{
 		//System.out.println("Size of Catalog: " + CommandCatalog.size());
 		for(Command one : CommandCatalog){	//ITerate Through catalog, one command at a time
 			//System.out.println(one.getName());
-			ArrayList<String> oneTrig = one.getTriggers();
-			for(String inStr : oneTrig){
-				if(inStr.equalsIgnoreCase(one.getName())){
-					numMatches++;
-				}else{
-					//System.out.println("Two: " + twoStr);
-					for(String oneStr : oneTrig){
-						//System.out.println("One: " + oneStr);
-						if(oneStr.equalsIgnoreCase(inStr)){	//Compare the command strings in each list
-							numMatches++;	//if there is a match, increment the match number
-						}
-					}					
+			String[] oneCom = one.getCommandList();
+			for(String twoStr : twoCom){
+				//System.out.println("Two: " + twoStr);
+				for(String oneStr : oneCom){
+					//System.out.println("One: " + oneStr);
+					if(oneStr.equalsIgnoreCase(twoStr)){	//Compare the command strings in each list
+						numMatches++;	//if there is a match, increment the match number
+					}
 				}
 			}
 			if(numMatches > 0){		//If there was a match, store that command 
@@ -201,15 +169,17 @@ public class Catalog{
 				}
 			}
 			int index = matchArray.indexOf(last);
-			return comArray.get(index);				//Return the command with the most matches.
+			return comArray.get(index++);				//Return the command with the most matches.
 		}else{
 			System.out.println("No Match.");
 			return null;
 		}
 	}
 	public Command Merge(Command one, Command two, Argument arg){
+		System.out.println("Merging!");
 		Command result = new Command();
 		if((one.getInput() == null) && (two.getInput() == null)){
+			System.out.println("Result: Null");
 			return null;
 		}else if(one.getInput() != null){
 			result.setInput(one.getInput());
@@ -226,11 +196,13 @@ public class Catalog{
 			result.setName(one.getName());
 			result.setCommandList(one.getCommandList());
 		}else{
+			System.out.println("Result: Null");
 			return null;
 		}
 		result.hasArgument = true;
 		result.setArgLink(arg);
-		return null;
+		System.out.println("Result: " + result);
+		return result;
 	}
 	public Command Merge(Command one, Command two){
 		if((one.getInput() == null) && (two.getInput() == null)){
@@ -243,7 +215,7 @@ public class Catalog{
 			result.setCommandList(two.getCommandList());
 			return result;
 		}else if(two.getInput() != null){
-			Command result = new Command(one.getInput(), one.getStartTime());
+			Command result = new Command(two.getInput(), two.getStartTime());
 			result.setAction(one.getAction("Windows 7 64bit"), "Windows 7 64bit");
 			result.setAction(one.getAction("Windows 7 32bit"), "Windows 7 32bit");
 			result.setName(one.getName());

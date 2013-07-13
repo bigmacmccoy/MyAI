@@ -23,66 +23,28 @@ public class AICore {
 		}		
 		return;
 	}
-	public Input Recieve(String userInput){
-		Input current = new Input(userInput, CurrentTime());
-		//Print("Recieved: " + current);
+	public Command Recieve(String userInput){
+		Command current = new Command(userInput, CurrentTime());
+		//Print("Received: " + current);
 		return current;
 	}
-	public Command Process(Input in){
-		Command current = new Command();
-		String original = in.getInput();
-		//Print("Orig: " + original);
-		ArrayList<String> filtered = Filter(original);
-		current.setTriggers(filtered);
-		ArrayList<Command> matched = commands.Match(in);
-		if(matched.size() == 0){
-		//String[] filtered1 = Filter(original);
-		//current.setCommandList(filtered1);
+	public Command Process(Command current){
+		String original = current.getInput();
+		//Print("Orig: " + current);
+		String[] filtered = Filter(original);
+		//Print("Filtered: " + original);
+		current.setCommandList(filtered);
+		//Print("Modified: " + current);
 		Command processed = commands.Match(current);
 		if(processed == null){
 			error = "No Matches!";
 			return null;
 		}else{
-			Command preference = CheckMemory(current, matched);
-			if(preference == null){
-				Command choice = AskUser(current, matched);
-				if(choice == null){
-					return null;
-				}
-				previous.Add(choice, current.getInput().toString().split(" "));
-				processed = commands.Merge(current, choice);
-				Print("Processed: " + processed);
-				return processed;
-			}
+			Print("Matched: " + processed.getName());
+			Print("Processed: " + processed);
+			return processed;
 		}
-		}
-		return null;
 	}
-	private Command AskUser(Command input, ArrayList<Command> possible){
-		Print("I could not match your query to an action. I have found " + possible.size() + " matched for your query.");
-		Scanner user = new Scanner(System.in);
-		Print("Here are the options I found. Please enter the corresponding number or \"none\" if none of them are correct.");
-		int i = 1;
-		for(Command com : possible){
-				Print("[ " + i + " ]\t" + com.getName());
-				i++;
-			}
-			String str = user.nextLine();
-			if(str.equalsIgnoreCase("none")){
-				user.close();
-				return null;
-			}
-			int choice = Integer.parseInt(str);
-			choice--;
-			if((choice >= 0) && (choice < possible.size())){
-				user.close();
-				return possible.get(choice);
-			}else{
-				Print("Error: Please choose a number displayed on screen.");
-				user.close();
-				return null;
-			}
-		}
 	private Command CheckMemory(Command input, ArrayList<Command> possible){
 		for(Command com : possible){
 			Memory last = previous.Get(com);
@@ -93,10 +55,11 @@ public class AICore {
 		return null;
 	}
 	public boolean Run(Command current, String OS){
-		//System.out.println(com);
+		//System.out.println(current);
 		String result = "cmd.exe /C ";
 		ArrayList<String> array = new ArrayList<String>();
 		array.add(current.getAction(OS));
+		System.out.println("Command: " + current.getAction(OS) + " - " + current.hasArgument);
 		if(current.hasArgument){
 			array.add(current.getArgLink().getAction(OS));
 		}
@@ -111,8 +74,8 @@ public class AICore {
 				}
 				//Print("Rep: " + value);
 				com = com.replace(bad, value);
-				result.concat("\"" + com + "\"");
-				//Print("Final: " + com);
+				result = result.concat("\"" + com + "\"");
+				//Print("Final: " + com + " - " + result);
 			}else if(com.matches("http://.*")){
 				result.concat(" <" + com + ">");
 			}
@@ -120,10 +83,8 @@ public class AICore {
 		try{
 			Print("Final: " + result);
 			Runtime rt = Runtime.getRuntime();
-			//@SuppressWarnings("unused")
-			//Process proc = rt.exec("cmd.exe /C \"" + com + "\"");
-			//rt.gc();
-			//Process proc = rt.exec(result);
+			@SuppressWarnings("unused")
+			Process proc = rt.exec(result);
 		}catch (Exception e){
 			//e.printStackTrace();
 			//Print("Could Not Run Command.");
@@ -131,13 +92,14 @@ public class AICore {
 		}
 		return true;
 	}
-	private ArrayList<String> Filter(String unfiltered){
+	private String[] Filter(String unfiltered){
 		String[] split = unfiltered.split(" ");
 		//for(String s : split){
 		//	Print("Split: " + s);
 		//}
 		ArrayList<String> filtered = new ArrayList<String>();
 		ArrayList<String> badAL = new ArrayList<String>();
+		String[] result = null;
 		
 		try{
 			BufferedReader br = new BufferedReader(new FileReader("docs/badWords.txt"));
@@ -153,6 +115,16 @@ public class AICore {
 					filtered.add(input);
 				}
 			}
+			result = new String[filtered.size()];
+			
+			for(int i = 0; i < filtered.size(); i++){
+				result[i] = filtered.get(i);
+			}
+			
+			//for(String s : result){
+			//	Print("Result: " + s);
+			//}
+			
 			br.close();
 		}catch(FileNotFoundException e){
 			error = "File Not Found.";
@@ -160,7 +132,7 @@ public class AICore {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return filtered;
+		return result;
 	}
 	public long CurrentTime(){
 		return System.nanoTime();
