@@ -1,12 +1,14 @@
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 
-public class AICore {
+public class AICore extends Thread{
 	public static String error = "";
 // Should have input reception, output, and processing
 	public static Catalog commands = null;
@@ -40,11 +42,12 @@ public class AICore {
 			error = "No Matches!";
 			return null;
 		}else{
-			Print("Matched: " + processed.getName());
-			Print("Processed: " + processed);
+			//Print("Matched: " + processed.getName());
+			//Print("Processed: " + processed);
 			return processed;
 		}
 	}
+	@SuppressWarnings("unused")
 	private Command CheckMemory(Command input, ArrayList<Command> possible){
 		for(Command com : possible){
 			Memory last = previous.Get(com);
@@ -55,11 +58,11 @@ public class AICore {
 		return null;
 	}
 	public boolean Run(Command current, String OS){
-		//System.out.println(current);
+		////System.out.println(current);
 		String result = "cmd.exe /C ";
 		ArrayList<String> array = new ArrayList<String>();
 		array.add(current.getAction(OS));
-		System.out.println("Command: " + current.getAction(OS) + " - " + current.hasArgument);
+		////System.out.println("Command: " + current.getAction(OS) + " - " + current.hasArgument);
 		if(current.hasArgument){
 			array.add(current.getArgLink().getAction(OS));
 		}
@@ -77,7 +80,17 @@ public class AICore {
 				result = result.concat("\"" + com + "\"");
 				//Print("Final: " + com + " - " + result);
 			}else if(com.matches("http://.*")){
-				result.concat(" <" + com + ">");
+				URI link;
+				try {
+					System.out.println(com);
+					link = new URI(com);
+					Desktop desk = Desktop.getDesktop();
+					desk.browse(link);
+				} catch (URISyntaxException e) {
+					//e.printStackTrace();
+				} catch (IOException e) {
+					//e.printStackTrace();
+				}
 			}
 		}
 		try{
@@ -85,9 +98,10 @@ public class AICore {
 			Runtime rt = Runtime.getRuntime();
 			@SuppressWarnings("unused")
 			Process proc = rt.exec(result);
+			
 		}catch (Exception e){
 			//e.printStackTrace();
-			//Print("Could Not Run Command.");
+			Print("Could Not Run Command.");
 			return false;
 		}
 		return true;

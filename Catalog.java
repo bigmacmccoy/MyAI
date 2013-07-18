@@ -14,7 +14,7 @@ public class Catalog{
 	private ArrayList<Command> CommandCatalog = new ArrayList<Command>();
 	private ArrayList<Argument> ArgumentCatalog = new ArrayList<Argument>();
 	public Catalog(){
-		System.out.println("Creating Catalog...");
+		//System.out.println("Creating Catalog...");
 		try {
 			File fXmlFile = new File("docs/Grammar_EN.mgl");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -27,15 +27,16 @@ public class Catalog{
 			for (int temp = 0; temp < nList.getLength(); temp++) {
  				Node nNode = nList.item(temp);
 		   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		   			//System.out.println();
  					Element eElement = (Element) nNode;
- 					if(eElement.getAttribute("Name") != null){
+ 					if(eElement.getAttribute("Name").length() > 0){
  						//System.out.println(eElement.getAttribute("Name"));
  						Command com = new Command();
  						com.setName(eElement.getAttribute("Name"));
  						com.setAction(eElement.getAttribute("Win64"), "Windows 7 64bit");
  						com.setAction(eElement.getAttribute("Win32"), "Windows 7 32bit");
  						com.setCommandList(SplitCommands(eElement.getAttribute("Command")));
- 						//System.out.println("Name: " + com.getName());
+ 						//System.out.println("Name: \"" + com.getName() + "\"");
  						CommandCatalog.add(com);
  					}else{
  						//System.out.println(eElement.getNodeName());
@@ -52,24 +53,24 @@ public class Catalog{
 		   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
  					Element eElement = (Element) nNode;
  					if(eElement.getAttribute("Name") != null){
- 						//System.out.println(eElement.getAttribute("Name"));
- 						//System.out.println("\"" + eElement.getAttribute("Link") + "\"");
+ 						////System.out.println(eElement.getAttribute("Name"));
+ 						////System.out.println("\"" + eElement.getAttribute("Link") + "\"");
  						if(Find(eElement.getAttribute("Link")) == null){
- 							AICore.error = "Argument has no link!";
+ 							//AICore.error = "Argument has no link!";
  						}else{
 	 						Argument arg = new Argument(Find(eElement.getAttribute("Link")));
 	 						arg.setName(eElement.getAttribute("Name"));
 	 						arg.setAction(eElement.getAttribute("Win64"), "Windows 7 64bit");
 	 						arg.setAction(eElement.getAttribute("Win32"), "Windows 7 32bit");
 	 						arg.setCommandList(SplitCommands(eElement.getAttribute("Command")));
-	 						//System.out.println("Name: " + com.getName());
+	 						////System.out.println("Name: " + com.getName());
 	 						ArgumentCatalog.add(arg);
  						}
  					}else{
- 						//System.out.println(eElement.getNodeName());
+ 						////System.out.println(eElement.getNodeName());
  					}
  				}else{
- 					//System.out.println("Not a node.");
+ 					////System.out.println("Not a node.");
  				}
 			}
 		}catch(FileNotFoundException e){
@@ -79,12 +80,12 @@ public class Catalog{
 			AICore.error = "Error reading MGL File.";
 			//e.printStackTrace();
 		}
-		System.out.println("Commands: " + CommandCatalog.size());
-		System.out.println("Arguments: " + ArgumentCatalog.size());
+		//System.out.println("Commands: " + CommandCatalog.size());
+		//System.out.println("Arguments: " + ArgumentCatalog.size());
 	}
 	public Command Match(Command two){
 		Command com = MatchCommand(two);
-		//System.out.println("Matched In Function: " + two + " + " + com);
+		////System.out.println("Matched In Function: " + two + " + " + com);
 		Argument arg = MatchArgument(two);
 		if(com == null){
 			return null;
@@ -102,21 +103,21 @@ public class Catalog{
 		String[] twoCom = two.getCommandList();
 		ArrayList<Integer> matchArray = new ArrayList<Integer>();
 		ArrayList<Argument> argArray = new ArrayList<Argument>();
-		//System.out.println("Size of Catalog: " + CommandCatalog.size());
+		System.out.println("Size of Arg Catalog: " + ArgumentCatalog.size());
 		for(Argument one : ArgumentCatalog){	//ITerate Through catalog, one command at a time
-			//System.out.println(one.getName());
+			System.out.println("One Name: " + one.getName());
 			String[] oneCom = one.getCommandList();
 			for(String twoStr : twoCom){
-				//System.out.println("Two: " + twoStr);
+				System.out.println("Two: " + twoStr);
 				for(String oneStr : oneCom){
-					//System.out.println("One: " + oneStr);
+					System.out.println("One: " + oneStr);
 					if(oneStr.equalsIgnoreCase(twoStr)){	//Compare the command strings in each list
 						numMatches++;	//if there is a match, increment the match number
 					}
 				}
 			}
 			if(numMatches > 0){		//If there was a match, store that command 
-				//System.out.println("NumMatches: " + numMatches);
+				System.out.println("NumMatches: " + numMatches);
 				argArray.add(one);	//and the match into an array.
 				matchArray.add(numMatches);
 				totalMatches += numMatches;
@@ -130,6 +131,7 @@ public class Catalog{
 				}
 			}
 			int index = matchArray.indexOf(last);
+			System.out.println(argArray.get(index).getAction("Windows 7 64bit"));
 			return argArray.get(index);				//Return the command with the most matches.
 		}else{
 			return null;
@@ -143,7 +145,7 @@ public class Catalog{
 		ArrayList<Integer> matchArray = new ArrayList<Integer>();
 		//System.out.println("Size of Catalog: " + CommandCatalog.size());
 		for(Command one : CommandCatalog){	//ITerate Through catalog, one command at a time
-			//System.out.println(one.getName());
+			//System.out.println("One Name: " + one.getName());
 			String[] oneCom = one.getCommandList();
 			for(String twoStr : twoCom){
 				//System.out.println("Two: " + twoStr);
@@ -171,15 +173,15 @@ public class Catalog{
 			int index = matchArray.indexOf(last);
 			return comArray.get(index++);				//Return the command with the most matches.
 		}else{
-			System.out.println("No Match.");
+			//System.out.println("No Match.");
 			return null;
 		}
 	}
 	public Command Merge(Command one, Command two, Argument arg){
-		System.out.println("Merging!");
+		//System.out.println("Merging!");
 		Command result = new Command();
 		if((one.getInput() == null) && (two.getInput() == null)){
-			System.out.println("Result: Null");
+			//System.out.println("Result: Null");
 			return null;
 		}else if(one.getInput() != null){
 			result.setInput(one.getInput());
@@ -196,12 +198,12 @@ public class Catalog{
 			result.setName(one.getName());
 			result.setCommandList(one.getCommandList());
 		}else{
-			System.out.println("Result: Null");
+			//System.out.println("Result: Null");
 			return null;
 		}
 		result.hasArgument = true;
 		result.setArgLink(arg);
-		System.out.println("Result: " + result);
+		//System.out.println("Result: " + result);
 		return result;
 	}
 	public Command Merge(Command one, Command two){
