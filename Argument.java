@@ -1,4 +1,3 @@
-
 public class Argument {
 	private Command associated;
 	private String input;
