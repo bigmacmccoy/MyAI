@@ -49,7 +49,9 @@ public class Frame extends JFrame implements ActionListener{
 	
 	String OS = "";
 	Boolean onTop = true;
-	
+	boolean again = false;
+	AICore MAI =  new AICore();
+	MemoryBank MemBank = new MemoryBank();
 	String inputText = "";
 	
 	public Frame(String str) throws IOException{
@@ -120,12 +122,16 @@ public class Frame extends JFrame implements ActionListener{
 				if(inputText.equalsIgnoreCase("exit")){
 					this.dispose();
 				}else{
-					AICore MAI =  new AICore();
+					if(again){
+						output.setText("Awaiting Input: ");
+						MemBank.Add(MAI.Recieve(inputText), inputText);
+					}
 					Command current =  new Command();
 					current = MAI.Recieve(inputText);
 					ArrayList<Action> result = MAI.Process(current, OS);
 					if(result == null){
-						//print("No Match Found.");
+						again = true;
+						output.setText("Please rephrase your request");
 					}else{
 						boolean success = MAI.Run(result);
 						if(success){
