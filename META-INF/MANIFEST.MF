@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: kschaefer
+Build-Jdk: 1.6.0_32
+Implementation-Title: SwingX Maven Support
+Implementation-Version: 1.6.4
+Implementation-Vendor-Id: org.swinglabs.swingx
+
