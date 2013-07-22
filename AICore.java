@@ -30,21 +30,18 @@ public class AICore extends Thread{
 		//Print("Received: " + current);
 		return current;
 	}
-	public Command Process(Command current){
+	public ArrayList<Action> Process(Command current, String OS){
 		String original = current.getInput();
 		//Print("Orig: " + current);
 		String[] filtered = Filter(original);
 		//Print("Filtered: " + original);
 		current.setCommandList(filtered);
 		//Print("Modified: " + current);
-		Command processed = commands.Match(current);
-		if(processed == null){
-			error = "No Matches!";
+		ArrayList<Action> actions = commands.Match(current, OS);
+		if(actions.size() == 0){
 			return null;
 		}else{
-			//Print("Matched: " + processed.getName());
-			//Print("Processed: " + processed);
-			return processed;
+			return actions;
 		}
 	}
 	@SuppressWarnings("unused")
@@ -57,52 +54,78 @@ public class AICore extends Thread{
 		}
 		return null;
 	}
-	public boolean Run(Command current, String OS){
-		////System.out.println(current);
+	public boolean Run(ArrayList<Action> actions){
+		//System.out.println(current);
 		String result = "cmd.exe /C ";
-		ArrayList<String> array = new ArrayList<String>();
-		array.add(current.getAction(OS));
-		////System.out.println("Command: " + current.getAction(OS) + " - " + current.hasArgument);
-		if(current.hasArgument){
-			array.add(current.getArgLink().getAction(OS));
-		}
-		for(String com : array){
-			if(com.matches(".*%.+%.*")){
-				String env = com.substring(com.indexOf('%')+1, com.lastIndexOf('%'));
-				String bad = com.substring(com.indexOf('%'), com.lastIndexOf('%')+1);
+		for(Action act : actions){
+			System.out.println(act.getName());
+			if(act.getAction().matches(".*%.+%.*")){
+				String fin = act.getAction();
+				String env = fin.substring(fin.indexOf('%')+1, fin.lastIndexOf('%'));
+				String bad = fin.substring(fin.indexOf('%'), fin.lastIndexOf('%')+1);
 				//Print("Env: \"" + env + "\"");
 				String value = System.getenv(env);
 				if(env.equalsIgnoreCase("AppData")){
 					value = value.replace("\\Roaming", "");
 				}
 				//Print("Rep: " + value);
-				com = com.replace(bad, value);
-				result = result.concat("\"" + com + "\"");
+				fin = fin.replace(bad, value);
+				result = result.concat("\"" + fin + "\"");
 				//Print("Final: " + com + " - " + result);
-			}else if(com.matches("http://.*")){
+				try{
+					Print("Final: " + result);
+					Runtime rt = Runtime.getRuntime();
+					@SuppressWarnings("unused")
+					Process proc = rt.exec(result);
+				}catch (Exception e){
+					//e.printStackTrace();
+					Print("Could Not Run Command.");
+					return false;
+				}
+			}else if(act.getAction().matches("http://.*")){
 				URI link;
 				try {
-					System.out.println(com);
-					link = new URI(com);
+					if(act.getAction().contains("search")){
+						//System.out.println("Action: " + act.getAction());
+						String terms = act.getInput();
+						//System.out.println("Input: " + act.getInput());
+						if(terms.contains("for")){
+							terms = terms.replace("for", "");
+						}
+						if(terms.contains("and")){
+							terms = terms.substring(terms.indexOf("search")+7,terms.indexOf("and"));
+						}else{
+							terms = terms.substring(terms.indexOf("search")+7, terms.length());
+						}
+						terms = terms.replace(' ', '+');
+						//System.out.println("Terms: " + terms);
+						link = new URI(act.getAction().replace("*", terms));
+					}else{
+						link = new URI(act.getAction());
+					}
 					Desktop desk = Desktop.getDesktop();
+					//System.out.println("Final: \"" + link.getPath() + "\"");
 					desk.browse(link);
 				} catch (URISyntaxException e) {
 					//e.printStackTrace();
+					return false;
 				} catch (IOException e) {
 					//e.printStackTrace();
+					return false;
+				}
+			}else{
+				System.out.println("No Wildcards!");
+				try{
+					Print("Final: " + result);
+					Runtime rt = Runtime.getRuntime();
+					@SuppressWarnings("unused")
+					Process proc = rt.exec(result);
+				}catch (Exception e){
+					//e.printStackTrace();
+					Print("Could Not Run Command.");
+					return false;
 				}
 			}
-		}
-		try{
-			Print("Final: " + result);
-			Runtime rt = Runtime.getRuntime();
-			@SuppressWarnings("unused")
-			Process proc = rt.exec(result);
-			
-		}catch (Exception e){
-			//e.printStackTrace();
-			Print("Could Not Run Command.");
-			return false;
 		}
 		return true;
 	}

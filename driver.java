@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class driver{
@@ -12,6 +13,10 @@ public class driver{
 		}else{
 			OS += " 32bit";
 		}
-		window = new Frame(OS);
+		try {
+			window = new Frame(OS);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

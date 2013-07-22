@@ -1,6 +1,7 @@
 
 public class Command{
 	private String input = "";
+	private boolean inputPresent;
 	private long startTime = 0;
 	private String actionName = "";
 	private String actionWin64 = "";
@@ -12,16 +13,19 @@ public class Command{
 	public Command(String textInput, long time){
 		input = textInput;
 		startTime = time;
+		setInputPresent(true);
 	}
 	public Command(){
 		input = null;
 		startTime = 0;
+		setInputPresent(false);
 	}
 	public String getInput(){
 		return input;
 	}
 	public void setInput(String input){
 		this.input = input;
+		this.setInputPresent(true);
 		return;
 	}
 	public String getName(){
@@ -90,5 +94,11 @@ public class Command{
 	}
 	public void setArgLink(Argument argLink) {
 		ArgLink = argLink;
+	}
+	public boolean isInputPresent() {
+		return inputPresent;
+	}
+	public void setInputPresent(boolean inputBool) {
+		this.inputPresent = inputBool;
 	}
 }

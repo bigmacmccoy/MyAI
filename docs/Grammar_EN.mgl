@@ -1,8 +1,13 @@
 <?xml version="1.0"?>
 <GrammarLibrary>
-	<GrammarObject Name="iTunes" Command="itunes,music,song" Win32="%ProgramFiles%\iTunes\iTunes.exe" Win64="%ProgramFiles(x86)%\iTunes\iTunes.exe" ></GrammarObject>
-	<GrammarObject Name="Windows Explorer" Command="explorer,file" Win32="explorer.exe" Win64="explorer.exe" ></GrammarObject>
-	<GrammarObject Name="Firefox" Command="firefox" Win32="%ProgramFiles%\Mozilla Firefox\firefox.exe" Win64="%ProgramFiles(x86)%\Mozilla Firefox\firefox.exe" ></GrammarObject>
-	<GrammarObject Name="Google Chrome" Command="google chrome,chrome" Win32="" Win64=""></GrammarObject>
-	<Argument Name="Facebook" Link="Google Chrome" Command="facebook" Win32="http://www.facebook.com" Win64="http://www.facebook.com" ></Argument>
+	<GrammarObject Name="iTunes" Command="itunes,music,song" Win32="%ProgramFiles%\iTunes\iTunes.exe" Win64="%ProgramFiles(x86)%\iTunes\iTunes.exe" ParameterSymtax="" ></GrammarObject>
+	<GrammarObject Name="Windows Explorer" Command="explorer,file" Win32="explorer.exe" Win64="explorer.exe" ParameterSymtax=""></GrammarObject>
+	<GrammarObject Name="Firefox" Command="firefox" Win32="%ProgramFiles%\Mozilla Firefox\firefox.exe" Win64="%ProgramFiles(x86)%\Mozilla Firefox\firefox.exe" ParameterSymtax="*"></GrammarObject>
+	<GrammarObject Name="Google Chrome" Command="google chrome,chrome" Win32="%ProgramFiles%\Google\Chrome\Application\chrome.exe" Win64="%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" ParameterSymtax="--new-window *"></GrammarObject>
+	<GrammarObject Name="Spotify" Command="spotify,music,song" Win32="" Win64="" ParameterSymtax="" ></GrammarObject>
+	<GrammarObject Name="Eclipse" Command="eclipse,java,ide" Win32="%UserProfile%\Documents\Eclipse\eclipse\eclipse.exe" Win64="%UserProfile%\Documents\Eclipse\eclipse\eclipse.exe" ParameterSyntax="" ></GrammarObject>
+	<Argument Name="Facebook" Link="" Command="facebook" Win32="http://www.facebook.com" Win64="http://www.facebook.com" ></Argument>
+	<Argument Name="Google" Link="" Command="Google" Win32="http://www.google.com" Win64="http://www.google.com" ></Argument>
+	<Argument Name="Reddit" Link="" Command="reddit" Win32="http://www.reddit.com" Win64="http://www.reddit.com" ></Argument>
+	<Argument Name="Google Search" Link="Google" Command="search"	Win32="http://www.google.com/search?q=*" Win64="http://www.google.com/search?q=*" ></Argument>
 </GrammarLibrary>
