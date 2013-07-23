@@ -8,7 +8,7 @@ public class MemoryBank {
 	public MemoryBank() {
 		allMem = new ArrayList<Memory>();
 	}
-	public void Add(Command result, String input){
+	public void Add(Action result, String input){
 		Memory mem = new Memory(result, input);
 		allMem.add(mem);
 	}
@@ -20,5 +20,4 @@ public class MemoryBank {
 		}
 		return null;
 	}
-
 }

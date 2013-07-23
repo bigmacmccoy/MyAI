@@ -33,9 +33,9 @@ public class AICore extends Thread{
 	public ArrayList<Action> Process(Command current, String OS){
 		String original = current.getInput();
 		//Print("Orig: " + current);
-		String[] filtered = Filter(original);
+		//String[] filtered = Filter(original);
 		//Print("Filtered: " + original);
-		current.setCommandList(filtered);
+		current.setCommandList(original.split(" "));
 		//Print("Modified: " + current);
 		ArrayList<Action> actions = commands.Match(current, OS);
 		if(actions.size() == 0){
@@ -129,47 +129,8 @@ public class AICore extends Thread{
 		}
 		return true;
 	}
-	private String[] Filter(String unfiltered){
-		String[] split = unfiltered.split(" ");
-		//for(String s : split){
-		//	Print("Split: " + s);
-		//}
-		ArrayList<String> filtered = new ArrayList<String>();
-		ArrayList<String> badAL = new ArrayList<String>();
-		String[] result = null;
-		
-		try{
-			BufferedReader br = new BufferedReader(new FileReader("docs/badWords.txt"));
-			while(br.ready()){
-				badAL.add(br.readLine());
-			}
-			
-			for(String input : split){
-				if(badAL.contains(input)){
-					//Print("Bad: " + input);
-				}else{
-					//Print("Good: " + input);
-					filtered.add(input);
-				}
-			}
-			result = new String[filtered.size()];
-			
-			for(int i = 0; i < filtered.size(); i++){
-				result[i] = filtered.get(i);
-			}
-			
-			//for(String s : result){
-			//	Print("Result: " + s);
-			//}
-			
-			br.close();
-		}catch(FileNotFoundException e){
-			error = "File Not Found.";
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
+	public void AddMemory(Action act, String input){
+		previous.Add(act, input);
 	}
 	public long CurrentTime(){
 		return System.nanoTime();
@@ -177,5 +138,8 @@ public class AICore extends Thread{
 	}
 	public <T> void Print(T object){
 			System.out.println(object.toString());
+	}
+	public void ShutDown(){
+		
 	}
 }

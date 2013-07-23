@@ -51,7 +51,6 @@ public class Frame extends JFrame implements ActionListener{
 	Boolean onTop = true;
 	boolean again = false;
 	AICore MAI =  new AICore();
-	MemoryBank MemBank = new MemoryBank();
 	String inputText = "";
 	
 	public Frame(String str) throws IOException{
@@ -120,11 +119,15 @@ public class Frame extends JFrame implements ActionListener{
 				inputText = input.getText();
 				input.setText("");
 				if(inputText.equalsIgnoreCase("exit")){
+					MAI.ShutDown();
 					this.dispose();
 				}else{
 					if(again){
 						output.setText("Awaiting Input: ");
-						MemBank.Add(MAI.Recieve(inputText), inputText);
+						ArrayList<Action> list = MAI.Process(MAI.Recieve(inputText), OS);
+						for(Action act : list){
+							MAI.AddMemory(act, inputText);
+						}
 					}
 					Command current =  new Command();
 					current = MAI.Recieve(inputText);

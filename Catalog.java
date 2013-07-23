@@ -166,8 +166,86 @@ public class Catalog{
 		}
 		return null;
 	}
+	public Argument FindArg(String name){
+		for(Argument arg : ArgumentCatalog){
+			if(arg.getName().equalsIgnoreCase(name)){
+				return arg;
+			}
+		}
+		return null;
+	}
 	private String[] SplitCommands(String allCommands){
 		String[] list = allCommands.split(",");
 		return list;
+	}
+	public boolean Save(){
+		try {
+			File fXmlFile = new File("docs/Grammar_EN.mgl");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			doc.getDocumentElement().normalize();
+
+			NodeList nList = doc.getElementsByTagName("GrammarObject");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+ 				Node nNode = nList.item(temp);
+		   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		   			Element eElement = (Element) nNode;
+		   			String name = eElement.getAttribute("Name");
+		   			String oldCommands = eElement.getAttribute("Command");
+		   			String[] current = this.Find(name).getCommandList();
+		   			String total = "";
+		   			for(String command : current){
+		   				total.concat(command + ",");
+		   			}
+		   			total = total.substring(0, total.length()-1);
+		   			for(String command : oldCommands.split(",")){
+		   				if(total.contains(command)){
+		   					
+		   				}else{
+		   					total = total.concat("," + command);
+		   				}
+		   			}
+		   			eElement.setAttribute("Command", total);
+ 				}else{
+ 					//System.out.println("Not a node.");
+ 				}
+			}
+			
+			nList = doc.getElementsByTagName("Argument");
+
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+ 				Node nNode = nList.item(temp);
+		   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+		   			Element eElement = (Element) nNode;
+		   			String name = eElement.getAttribute("Name");
+		   			String oldCommands = eElement.getAttribute("Command");
+		   			String[] current = this.FindArg(name).getCommandList();
+		   			String total = "";
+		   			for(String argument : current){
+		   				total.concat(argument + ",");
+		   			}
+		   			total = total.substring(0, total.length()-1);
+		   			for(String argument : oldCommands.split(",")){
+		   				if(total.contains(argument)){
+		   					
+		   				}else{
+		   					total = total.concat("," + argument);
+		   				}
+		   			}
+		   			eElement.setAttribute("Command", total);
+ 				}else{
+ 					////System.out.println("Not a node.");
+ 				}
+			}
+		}catch(FileNotFoundException e){
+			AICore.error = "File Not Found - " + e.getMessage();
+			//e.printStackTrace();
+		}catch(Exception e) {
+			AICore.error = "Error reading MGL File.";
+			//e.printStackTrace();
+		}
+		return false;
 	}
 }

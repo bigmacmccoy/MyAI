@@ -4,9 +4,11 @@ import java.util.ArrayList;
 public class Memory {
 	private Command preference;
 	private boolean userDefined = false;
-	public Memory(Command preference, String newComm) {
+	Catalog cat = new Catalog();
+	public Memory(Action act, String newComm) {
+		Command pref = cat.Find(act.getName());
+		setPreference(pref);
 		setCommands(newComm);
-		setPreference(preference);
 		setUserDefined(false);
 		return;
 	}

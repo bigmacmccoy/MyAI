@@ -1,7 +1,7 @@
 public class Argument {
 	private Command associated;
 	private String input;
-	private String actionName = "";
+	private String name = "";
 	private String actionWin64 = "";
 	private String actionWin32 = "";
 	private String[] commandList;
@@ -23,10 +23,10 @@ public class Argument {
 		this.associated = associated;
 	}
 	public String getName() {
-		return actionName;
+		return name;
 	}
 	public void setName(String actionName) {
-		this.actionName = actionName;
+		this.name = actionName;
 	}
 	public String getAction(String os){
 		switch(os){
@@ -57,6 +57,6 @@ public class Argument {
 		this.commandList = commandList;
 	}
 	public String toString(){
-		return("Name: " + this.actionName + " Action: " + this.getInput());
+		return("Name: " + this.getName() + " Action: " + this.getInput());
 	}
 }
