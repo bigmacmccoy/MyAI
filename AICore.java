@@ -28,8 +28,10 @@ public class AICore extends Thread{
 // Should have input reception, output, and processing
 	public static Catalog commands = null;
 	public static MemoryBank previous = null;
+	public Settings settings = null;
 	
 	public AICore(){
+		settings = new Settings();
 		commands = new Catalog();
 		previous = new MemoryBank();
 		if(error.isEmpty()){
@@ -199,6 +201,13 @@ public class AICore extends Thread{
 	public void AddMemory(Action act, String input){
 		previous.Add(act, input);
 	}
+	public void SetSourceFolder(String name, String location){
+		if(name.equalsIgnoreCase("audio")){
+			settings.setDefaultAudioFolder(location);
+		}else if(name.equalsIgnoreCase("video")){
+			settings.setDefaultVideoFolder(location);
+		}
+	}
 	public long CurrentTime(){
 		return System.nanoTime();
     	
@@ -207,6 +216,6 @@ public class AICore extends Thread{
 			System.out.println(object.toString());
 	}
 	public void ShutDown(){
-		
+		settings.writeFile("docs/settings.msf");
 	}
 }
