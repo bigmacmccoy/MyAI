@@ -4,7 +4,7 @@
 	<GrammarObject Name="Windows Explorer" Command="explorer,file" Win32="explorer.exe" Win64="explorer.exe" ParameterSymtax=""></GrammarObject>
 	<GrammarObject Name="Firefox" Command="firefox" Win32="%ProgramFiles%\Mozilla Firefox\firefox.exe" Win64="%ProgramFiles(x86)%\Mozilla Firefox\firefox.exe" ParameterSymtax="*"></GrammarObject>
 	<GrammarObject Name="Google Chrome" Command="google chrome,chrome" Win32="%ProgramFiles%\Google\Chrome\Application\chrome.exe" Win64="%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" ParameterSymtax="--new-window *"></GrammarObject>
-	<GrammarObject Name="Spotify" Command="spotify,music,song" Win32="" Win64="" ParameterSymtax="" ></GrammarObject>
+	<GrammarObject Name="Spotify" Command="spotify,music,song,play" Win32="%AppData%\Roaming\Spotify\spotify.exe" Win64="%AppData%\Roaming\Spotify\spotify.exe" ParameterSymtax="" ></GrammarObject>
 	<GrammarObject Name="Eclipse" Command="eclipse,java,ide" Win32="%UserProfile%\Documents\Eclipse\eclipse\eclipse.exe" Win64="%UserProfile%\Documents\Eclipse\eclipse\eclipse.exe" ParameterSyntax="" ></GrammarObject>
 	<Argument Name="Facebook" Link="" Command="facebook" Win32="http://www.facebook.com" Win64="http://www.facebook.com" ></Argument>
 	<Argument Name="Google" Link="" Command="Google" Win32="http://www.google.com" Win64="http://www.google.com" ></Argument>

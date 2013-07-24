@@ -246,6 +246,7 @@ public class Catalog{
 			AICore.error = "Error reading MGL File.";
 			//e.printStackTrace();
 		}
+		
 		return false;
 	}
 }

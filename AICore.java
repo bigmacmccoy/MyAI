@@ -1,11 +1,26 @@
 import java.awt.Desktop;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 
 public class AICore extends Thread{
@@ -59,29 +74,58 @@ public class AICore extends Thread{
 		String result = "cmd.exe /C ";
 		for(Action act : actions){
 			System.out.println(act.getName());
-			if(act.getAction().matches(".*%.+%.*")){
-				String fin = act.getAction();
-				String env = fin.substring(fin.indexOf('%')+1, fin.lastIndexOf('%'));
-				String bad = fin.substring(fin.indexOf('%'), fin.lastIndexOf('%')+1);
-				//Print("Env: \"" + env + "\"");
-				String value = System.getenv(env);
-				if(env.equalsIgnoreCase("AppData")){
-					value = value.replace("\\Roaming", "");
+			if((act.getInput().contains("play") && (act.getName().equalsIgnoreCase("Spotify")))){
+				System.out.println("Spotify play");
+				String searchInfo = act.getInput().replace("play", "");
+				if(searchInfo.contains("by")){
+					searchInfo = searchInfo.replace("by", "");
 				}
-				//Print("Rep: " + value);
-				fin = fin.replace(bad, value);
-				result = result.concat("\"" + fin + "\"");
-				//Print("Final: " + com + " - " + result);
-				try{
-					Print("Final: " + result);
-					Runtime rt = Runtime.getRuntime();
-					@SuppressWarnings("unused")
-					Process proc = rt.exec(result);
-				}catch (Exception e){
-					//e.printStackTrace();
-					Print("Could Not Run Command.");
-					return false;
+				searchInfo = searchInfo.replace(" ", "%20");
+				String key = "";
+				try {
+					URL search = new URL("http://ws.spotify.com/search/1/track?q=" + searchInfo);
+					ReadableByteChannel rbc = Channels.newChannel(search.openStream());
+				    FileOutputStream fos = new FileOutputStream("docs/temp.xml");
+				    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+					File fXmlFile = new File("docs/temp.xml");
+					DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+					Document doc = dBuilder.parse(fXmlFile);
+					doc.getDocumentElement().normalize();
+
+					NodeList nList = doc.getElementsByTagName("track");
+	 				Node nNode = nList.item(0);
+			   		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+			   			System.out.println(act.getAction());
+			   			String fin = act.getAction();
+						String env = fin.substring(fin.indexOf('%')+1, fin.lastIndexOf('%'));
+						String bad = fin.substring(fin.indexOf('%'), fin.lastIndexOf('%')+1);
+						String value = System.getenv(env);
+						if(env.equalsIgnoreCase("AppData")){
+							value = value.replace("\\Roaming", "");
+						}
+						fin = fin.replace(bad, value);
+						result = result.concat("\"" + fin + "\"");
+			   			Element eElement = (Element) nNode;
+			   			key = eElement.getAttribute("href");
+			   			Runtime rt = Runtime.getRuntime();
+						@SuppressWarnings("unused")
+						Process proc = rt.exec(result + " " + key);
+					    fos.close();
+					    fXmlFile.delete();
+					    key = "";
+			   		}
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+				key = "";
 			}else if(act.getAction().matches("http://.*")){
 				URI link;
 				try {
@@ -111,6 +155,29 @@ public class AICore extends Thread{
 					return false;
 				} catch (IOException e) {
 					//e.printStackTrace();
+					return false;
+				}
+			}else if(act.getAction().matches(".*%.+%.*")){
+				String fin = act.getAction();
+				String env = fin.substring(fin.indexOf('%')+1, fin.lastIndexOf('%'));
+				String bad = fin.substring(fin.indexOf('%'), fin.lastIndexOf('%')+1);
+				//Print("Env: \"" + env + "\"");
+				String value = System.getenv(env);
+				if(env.equalsIgnoreCase("AppData")){
+					value = value.replace("\\Roaming", "");
+				}
+				//Print("Rep: " + value);
+				fin = fin.replace(bad, value);
+				result = result.concat("\"" + fin + "\"");
+				//Print("Final: " + com + " - " + result);
+				try{
+					Print("Final: " + result);
+					Runtime rt = Runtime.getRuntime();
+					@SuppressWarnings("unused")
+					Process proc = rt.exec(result);
+				}catch (Exception e){
+					//e.printStackTrace();
+					Print("Could Not Run Command.");
 					return false;
 				}
 			}else{
